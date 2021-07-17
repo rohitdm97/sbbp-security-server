@@ -8,7 +8,6 @@ import java.io.IOException;
 
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -36,7 +35,7 @@ public class AuthenticationFilterImpl extends AbstractAuthenticationProcessingFi
     protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
         long time = System.nanoTime();
         request.setAttribute("time", time);
-        if(HttpStatus.valueOf(response.getStatus()).is2xxSuccessful()) {
+        if (HttpStatus.valueOf(response.getStatus()).is2xxSuccessful()) {
             return super.requiresAuthentication(request, response);
         }
         // do not process if response is already set to non 2xx

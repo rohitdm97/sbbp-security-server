@@ -15,11 +15,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -28,10 +26,15 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // does actual authentication
-    private AuthenticationProvider authenticationProvider;
+    private final AuthenticationProvider authenticationProvider;
 
     // filter to intercept request before handled controller
     private Filter authenticationFilter;
+
+    public WebSecurityConfig(AuthenticationProviderImpl authenticationProviderImpl) {
+        // config here
+        this.authenticationProvider = authenticationProviderImpl;
+    }
 
     /**
      * configure(WebSecurity) is used for configuration settings that impact global security (ignore resources, set
@@ -78,11 +81,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void init() throws Exception {
         // init filter impl
         this.authenticationFilter = new AuthenticationFilterImpl(authenticationManager());
-    }
-
-    public WebSecurityConfig(AuthenticationProviderImpl authenticationProviderImpl) {
-        // config here
-        this.authenticationProvider = authenticationProviderImpl;
     }
 
 }
