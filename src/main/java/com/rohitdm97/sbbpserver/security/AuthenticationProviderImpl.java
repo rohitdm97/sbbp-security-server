@@ -4,6 +4,10 @@ import java.util.Collections;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
@@ -22,7 +26,14 @@ public class AuthenticationProviderImpl extends AbstractUserDetailsAuthenticatio
 
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-        return new User("username", "password", Collections.emptyList());
+        final Subject subject = SecurityUtils.getSubject();
+        try {
+            subject.login(new UsernamePasswordToken("", (String) authentication.getCredentials()));
+        } catch (org.apache.shiro.authc.AuthenticationException ex) {
+            throw new BadCredentialsException("invalid credentials", ex);
+        }
+
+        return new User((String) subject.getPrincipal(), "", Collections.emptyList());
     }
 
 }
